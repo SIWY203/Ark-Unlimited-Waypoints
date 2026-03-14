@@ -1,11 +1,10 @@
-﻿public static class Creator
+﻿using static MessageManager;
+
+public static class Creator
 {
-    public static void CreateWaypoints()
+    public static void CreateWaypoints(string map, int num, int waypointCount = 10)
     {
-        int waypointCount = 10;
-        int num = 100;
         string name = "WAYPOINT";
-        string map = "Ragnarok";
         (float X, float Y, float Z) cords = (-589500.000000f, -589500.000000f, -23514.923828f);
         (float R, float G, float B, float A) color = (1.000000f, 1.000000f, 1.000000f, 1.000000f);
 
