@@ -52,11 +52,11 @@ public class Program
                     $"...ShooterGame\\Saved\\Config\\Windows\\GameUserSettings.ini");
                 Console.Write("Mapa: ");
                 map = Console.ReadLine() ?? "";
-                if (map == "") continue;
+                if (map == "") { Error("Nie wpisano mapy!"); continue; }
                 success = true;
             }
 
-            BackupManager.BackupFile();
+            if (!BackupManager.BackupFile()) continue;
             FindLastCreatedWaypoint(ref num);
             Creator.CreateWaypoints(map, num, waypointCount);
         }
