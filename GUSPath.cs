@@ -1,12 +1,12 @@
 ﻿using static MessageManager;
-public static class GamePath
+public static class GUSPath
 {
     public static string Path { get; private set; } = string.Empty;
 
     public static void SetPath()
     {
         Console.WriteLine("Ustaw ścieżkę do biblioteki steam, \nw której znajduje się Ark Ascended.");
-        Console.WriteLine("Dla ścieżki \"C:/SteamLibrary\", \nprawidłowy spis to po prostu \"C:\".");
+        Console.WriteLine("Dla ścieżki \"C:/SteamLibrary/...\", \nprawidłowy spis to po prostu \"C:\".");
         Console.Write("\nWpisz: ");
         string steamLibPath = Console.ReadLine() ?? string.Empty;
         if (Directory.Exists(steamLibPath))
@@ -17,7 +17,6 @@ public static class GamePath
         {
             Error("Coś poszło nie tak!");
         }
-            
 
         Path = $@"{steamLibPath}\SteamLibrary\steamapps\common\ARK Survival Ascended\ShooterGame\Saved\Config\Windows\GameUserSettings.ini";
 

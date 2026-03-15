@@ -2,7 +2,7 @@
 
 public static class Creator
 {
-    public static void CreateWaypoints(string map, int num, int waypointCount = 10)
+    public static void CreateWaypoints(string map, int num, int waypointCount = 3)
     {
         string name = "WAYPOINT";
         (float X, float Y, float Z) cords = (-589500.000000f, -589500.000000f, -23514.923828f);
@@ -24,17 +24,10 @@ public static class Creator
             num += 1;
         }
 
-        File.AppendAllLines("test.txt", content);
-
-
-        // --- LOG ---
-        //Console.WriteLine($"Dopisano zawartość:\n");
-        //foreach (string c in content)
-        //{
-        //    Console.WriteLine(c + "\n");
-        //}
+        File.AppendAllLines(GUSPath.GetPath(), content);
     }
-    
+
+
 }
 
 
