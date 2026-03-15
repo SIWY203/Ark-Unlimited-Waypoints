@@ -6,6 +6,11 @@
     <RootNamespace>More_Map_Markers</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <ApplicationIcon>ark-compass.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="ark-compass.ico" />
+  </ItemGroup>
 
 </Project>
