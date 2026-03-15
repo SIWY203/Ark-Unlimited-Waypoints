@@ -1,35 +1,65 @@
 ﻿using static MessageManager;
 public static class GUSPath
 {
-    public static string Path { get; private set; } = string.Empty;
+    private static string ConfigFile => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SteamLibPath.txt");
+    public static string FilePath { get; private set; } = string.Empty;
+    public static string FileName => "GameUserSettings.ini";
+
+
+    public static void LoadPath()
+    {
+        if (File.Exists(ConfigFile))
+        {
+            FilePath = File.ReadAllText(ConfigFile).Trim();
+            if (string.IsNullOrEmpty(FilePath) || !Directory.Exists(FilePath))
+            {
+                SetPath();
+            }
+        }
+        else SetPath();
+    }
 
     public static void SetPath()
     {
-        Console.WriteLine("Ustaw ścieżkę do biblioteki steam, \nw której znajduje się Ark Ascended.");
-        Console.WriteLine("Dla ścieżki \"C:/SteamLibrary/...\", \nprawidłowy spis to po prostu \"C:\".");
+        Console.Clear();
+        Console.WriteLine("=== Konfiguracja ścieżki ARK ===");
+        Console.WriteLine("Podaj literę dysku (np. C) lub pełną ścieżkę do SteamLibrary");
         Console.Write("\nWpisz: ");
-        string steamLibPath = Console.ReadLine() ?? string.Empty;
-        if (Directory.Exists(steamLibPath))
+
+        string input = Console.ReadLine()?.ToUpper() ?? string.Empty;
+
+        // fix dla samej litery dysku
+        if (input.Length == 1 || (input.Length == 2 && input.EndsWith(":")))
         {
-            Success("Ścieżka została zapisana!");
+            input = input.Substring(0, 1) + @":\";
+        }
+
+        // pełna ścieżka
+        string detectedPath = Path.Combine(input, "SteamLibrary", "steamapps", "common", "ARK Survival Ascended", "ShooterGame", "Saved", "Config", "Windows");
+
+        if (Directory.Exists(detectedPath))
+        {
+            FilePath = detectedPath;
+
+            File.WriteAllText(ConfigFile, FilePath);
+            Success($"Ścieżka została zapisana: {FilePath}");
         }
         else
         {
-            Error("Coś poszło nie tak!");
+            Error($"Nie znaleziono folderu:\n{detectedPath}");
+            Console.WriteLine("Naciśnij dowolny klawisz, aby spróbować ponownie...");
+            Console.ReadKey();
+            SetPath(); // rekurencja (dopuszczalna przy konfiguracji)
         }
-
-        Path = $@"{steamLibPath}\SteamLibrary\steamapps\common\ARK Survival Ascended\ShooterGame\Saved\Config\Windows\GameUserSettings.ini";
 
     }
 
-    public static string GetPath()
+    public static string GetFullPath()
     {
-        if (string.IsNullOrEmpty(Path))
-        {
-            Warn("Ścieżka do gry nie jest ustawiona!");
-            SetPath();
-        }
-        return Path;
+        // jeśli FilePath puste, załaduj
+        if (string.IsNullOrEmpty(FilePath)) LoadPath();
+
+        return Path.Combine(FilePath, FileName);
     }
 
 }

@@ -24,7 +24,8 @@ public static class Creator
             num += 1;
         }
 
-        File.AppendAllLines(GUSPath.GetPath(), content);
+        string fullPath = GUSPath.GetFullPath();
+        File.AppendAllLines(fullPath, content);
     }
 
 

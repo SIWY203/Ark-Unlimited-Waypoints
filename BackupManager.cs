@@ -4,17 +4,24 @@ public static class BackupManager
 {
     public static bool BackupFile()
     {
-        string source = GUSPath.GetPath();
-        string tempBackup = GUSPath.GetPath() + ".tmp";
+        string sourceFile = GUSPath.GetFullPath();
+        string backupFile = sourceFile + "-backup";
+        string tempBackup = sourceFile + ".tmp";
         try
         {
-            if (File.Exists(GUSPath.GetPath()))
+            if (!Confirm(
+                "Czy na pewno chcesz dodać waypointy?\n" +
+                "To nadpisze poprzedni backup ustawień!\n\n" +
+                "Kontynuować? (T/N): ")) return false;
+            
+
+            if (File.Exists(sourceFile))
             {
                 // Kopia do pliku tymczasowego
-                File.Copy(source, "backup-" + source, true);
+                File.Copy(sourceFile, tempBackup, true);
                 // Skoro nie wyrzuciło exception, to kopiowanie się udało.
-                File.Move(tempBackup, source, true); // podmiana plików
-                Log("Utworzono backup ustawień (backup-GameUserSettings.ini)");
+                File.Move(tempBackup, backupFile, true); // podmiana plików
+                Log("Utworzono backup ustawień (GameUserSettings.ini-backup)");
                 return true;
             }
             else
@@ -33,31 +40,55 @@ public static class BackupManager
 
     public static void RestoreFile()
     {
-        string source = GUSPath.GetPath();
-        string backupFile = GUSPath.GetPath() + ".tmp";
-        string tempRestore = source + ".tmp"; // Plik tymczasowy
+        string sourceFile = GUSPath.GetFullPath();
+        string backupFile = sourceFile + "-backup";
+        string tmpRestore = backupFile + ".tmp";
 
         try
         {
-            // czy w ogóle jest z czego przywracać
+            if (!Confirm(
+                "Czy na pewno chcesz przywrócić poprzednie ustawienia?\n" +
+                "Uwaga! To usunie twoje ostatnio dodane waypointy!\n\n" +
+                "Na pewno przywrócić? (T/N): ")) return;
+
+            Console.Clear();
             if (!File.Exists(backupFile))
             {
-                Warn("Nie znaleziono pliku backupu (GameUserSettingsBackup.txt).");
+                Warn("Jeszcze nie utworzono żadnego backupa!");
                 return;
             }
-
-            // backup do pliku tymczasowego
-            File.Copy(backupFile, tempRestore, true);
-            // Skoro kopia się udała - szybki "swap"
-            File.Move(tempRestore, source, true);
-            Success("Ustawienia zostały przywrócone!");
+            if (File.Exists(sourceFile))
+            {
+                // bezinwazyjnie: backup do pliku tmp, potem szybki "swap"
+                File.Copy(backupFile, tmpRestore, true);
+                File.Move(tmpRestore, sourceFile, true);
+                Success("Ustawienia zostały przywrócone!");
+                Console.ReadLine(); Console.Clear();
+            }
+            else Error("Podczas backupu nie znaleziono pliku źródłowego");
         }
+
         catch (Exception ex)
         {
             Error($"Błąd podczas przywracania!");
             Error($"Szczegóły: {ex.Message}");
-            if (File.Exists(tempRestore)) File.Delete(tempRestore); // Sprzątanie
+            if (File.Exists(tmpRestore)) File.Delete(tmpRestore); // Sprzątanie
+            Console.ReadLine(); Console.Clear();
         }
+    }
+
+
+    public static bool Confirm(string question)
+    {
+        Console.Write(question);
+        string choice = Console.ReadLine() ?? "N";
+        if (choice.ToUpper() != "T")
+        {
+            Warn("Anulowano.");
+            Console.ReadLine(); Console.Clear();
+            return false;
+        }
+        return true;
     }
 
 }
