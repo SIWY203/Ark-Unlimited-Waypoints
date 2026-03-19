@@ -43,6 +43,8 @@ public static class GUSPath
 
             File.WriteAllText(ConfigFile, FilePath);
             Success($"Ścieżka została zapisana: {FilePath}");
+            Console.ReadKey();
+            Console.Clear();
         }
         else
         {
